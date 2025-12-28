@@ -15,15 +15,19 @@ namespace ImportVehiclesCsv
     {
         public string Run(string input)
         {
-            XmlDocument doc = new XmlDocument(); //Make new XML document class
-            doc.LoadXml(input); // Populate class with input from file
-            string root = doc.SelectSingleNode("/*").Name; // get the 'root' (outer layer of the XML file) from the import
-            //Order inputOrder = XmlSerializerCache.Deserialize<Order>(input, root); 
-            //'Unpack' the XML file by removing the outer most bracket, in this case <Order> </Order>
-            
+            VehicleImportBody importData = XmlSerializerCache.Deserialize<VehicleImportBody>(input, "BODY");
+
+            // 2. Safety check - using standard if-statement for older compilers
+            if (importData == null || importData.Record == null)
+            {
+                // fixme
+                return "Error: Could not deserialize XML. Check structure.";
+            }
+            VehicleRecord vehicleRecord = importData.Record;
+
             Vehicle vehicle = new Vehicle();
-            vehicle.ForeignID = "veh123";
-            vehicle.Name = "Import Vehicle 123";
+            vehicle.ForeignID = vehicleRecord.VehicleId;
+            vehicle.Name = vehicleRecord.VehicleNo;
 
             // Create an import TFP Transaction with a description for the Transaction Log, and fill in objects and actions
             UpdateTransaction updateTransaction = new UpdateTransaction("Importing Vehicle " + vehicle.ForeignID);
@@ -34,3 +38,4 @@ namespace ImportVehiclesCsv
         }
     }
 }
+
