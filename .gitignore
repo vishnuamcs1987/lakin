@@ -2,5 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/FleetPlanner/XSLT/ImportVehiclesCsv/.vs/ImportVehiclesCsv
+/FleetPlanner/XSLT/*/.vs/*
+/FleetPlanner/XSLT/*/bin
+/FleetPlanner/XSLT/*/obj
 /.vs

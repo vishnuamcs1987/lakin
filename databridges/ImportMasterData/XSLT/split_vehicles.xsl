@@ -7,12 +7,12 @@
       <BODY>
         <xsl:for-each select="row">
           <OBJECT>
-            <VehicleInformationResult xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-              <ExtensionData />
-              <Vehicle>
-                <xsl:copy-of select="*" />
-              </Vehicle>			
-            </VehicleInformationResult>
+            <VehicleRecord xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+              <!-- <ExtensionData /> -->
+              <!-- <Vehicle> -->
+              <xsl:copy-of select="*" />
+              <!-- </Vehicle>			 -->
+            </VehicleRecord>
           </OBJECT>				
         </xsl:for-each>
       </BODY>

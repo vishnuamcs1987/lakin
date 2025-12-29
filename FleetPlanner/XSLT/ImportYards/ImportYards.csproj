@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Amcs.Tools">
+      <HintPath>..\..\..\Bin\Amcs.Tools.dll</HintPath>
+    </Reference>
+    <Reference Include="Tfp.NET">
+      <HintPath>..\..\..\Bin\Tfp.NET.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
