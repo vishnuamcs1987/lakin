@@ -1,0 +1,6 @@
+# Creating symlinks - powershell
+New-Item -ItemType SymbolicLink -Path ".\XSLT" -Target "C:\mine\projects\lakin\github\databridges\ImportMasterData\XSLT\"
+New-Item -ItemType SymbolicLink -Path ".\log4net.config" -Target "C:\mine\projects\lakin\github\databridges\ImportMasterData\log4net.config"
+
+# Build with Net 4.8 framework
+

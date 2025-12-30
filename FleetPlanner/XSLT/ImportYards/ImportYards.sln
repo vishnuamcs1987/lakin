@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36717.8 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportYards", "ImportYards.csproj", "{8AB4CDAB-9DFA-41BE-B4E4-84A112C664C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportYards", "ImportYards.csproj", "{DD51C8A4-8BB8-4229-949C-A8A98174C2EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8AB4CDAB-9DFA-41BE-B4E4-84A112C664C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AB4CDAB-9DFA-41BE-B4E4-84A112C664C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AB4CDAB-9DFA-41BE-B4E4-84A112C664C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AB4CDAB-9DFA-41BE-B4E4-84A112C664C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD51C8A4-8BB8-4229-949C-A8A98174C2EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD51C8A4-8BB8-4229-949C-A8A98174C2EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD51C8A4-8BB8-4229-949C-A8A98174C2EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD51C8A4-8BB8-4229-949C-A8A98174C2EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D396CE4E-D7FC-439D-9CE5-EAF6685F6D9A}
+		SolutionGuid = {AF066BCE-CFD8-4E71-966D-714E313EC2B4}
 	EndGlobalSection
 EndGlobal

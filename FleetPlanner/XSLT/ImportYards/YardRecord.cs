@@ -92,8 +92,13 @@ namespace ImportYards
 
         private int? ParseInt(string val)
         {
-            if (string.IsNullOrEmpty(val) || val == "NULL") return null;
-            return int.TryParse(val, out int res) ? res : null;
+            if (string.IsNullOrEmpty(val) || val == "NULL")
+            {
+                return null;
+            }
+
+            // 2. Otherwise, try to turn the text into a number
+            return int.Parse(val);
         }
     }
 
