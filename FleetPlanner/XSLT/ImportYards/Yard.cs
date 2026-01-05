@@ -31,14 +31,7 @@ namespace ImportYards
         public string EqyStreetAddress2 { get; set; }
 
         [XmlElement("EQY_POSTAL_CODE")]
-        public string EqyPostalCodeRaw { get; set; }
-        public int? EqyPostalCode
-        {
-            get
-            {
-                return ParseInt(EqyPostalCodeRaw);
-            }
-        }
+        public string EqyPostalCode { get; set; }
 
         [XmlElement("EQY_CITY")]
         public string EqyCity { get; set; }

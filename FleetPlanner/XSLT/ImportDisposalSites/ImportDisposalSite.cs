@@ -1,35 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using Amcs.Tools.Xml;
-using ImportYards;
-using Tfp.Actions;
 using Tfp.Datamodel;
 using Tfp.Gateways;
 
-namespace ImportYards
+namespace ImportDisposalSites
 {
-    public class ImportYard : IExternal
+    public class ImportDisposalSite : IExternal
+    {
     {
         public string Run(string input)
         {
-            YardImportBody importData = XmlSerializerCache.Deserialize<YardImportBody>(input, "BODY");
+            DisposalSiteImportBody importData = XmlSerializerCache.Deserialize<DisposalSiteImportBody>(input, "BODY");
 
             if (importData == null || importData.Record == null)
             {
 
                 throw new InvalidDataException("Error: Could not deserialize XML. Check structure.");
             }
-            YardRecord yardRecord = importData.Record;
+            DisposalSiteRecord siteRecord = importData.Record;
 
             Terminal terminal = new Terminal()
             {
-                ForeignID = yardRecord.FpEqyid,
-                Name = yardRecord.EqyTerminalNo,
-                Name2 = yardRecord.EqyName,
+                ForeignID = siteRecord.FpDsid,
+                Name = siteRecord.DsTerminalNo,
+                Name2 = siteRecord.DsName,
                 //QualificationProfiles = new List<DataReference<QualificationProfile>>(),
                 //Qualifications = new QualificationEntries { Entries = new List<QualificationEntry>() },
                 //IgnoreInventoryCollectionTime = true,
@@ -39,19 +38,19 @@ namespace ImportYards
 
             Address address = new Address()
             {
-                Street = yardRecord.EqyStreetAddress1,
-                HouseNo = yardRecord.EqyStreetAddress2,
-                City = yardRecord.EqyCity,
-                ZipCode = yardRecord.EqyPostalCode,
+                Street = siteRecord.EqyStreetAddress1,
+                HouseNo = siteRecord.EqyStreetAddress2,
+                City = siteRecord.EqyCity,
+                ZipCode = siteRecord.EqyPostalCode,
                 Country = "USA",
             };
 
-            if (yardRecord.EqyLatitude.HasValue && yardRecord.EqyLongitude.HasValue)
+            if (siteRecord.EqyLatitude.HasValue && siteRecord.EqyLongitude.HasValue)
             {
                 address.HomeLngLat = new LongLatCoord()
                 {
-                    Lat = new TfpNullable<double>((double)yardRecord.EqyLatitude.Value),
-                    Long = new TfpNullable<double>((double)yardRecord.EqyLongitude.Value),
+                    Lat = new TfpNullable<double>((double)siteRecord.EqyLatitude.Value),
+                    Long = new TfpNullable<double>((double)siteRecord.EqyLongitude.Value),
                 };
             }
 
@@ -66,14 +65,14 @@ namespace ImportYards
 
             try
             {
-                if (!string.IsNullOrEmpty(yardRecord.EqyHosStart))
-                    terminal.OpenFrom = TimeSpan.Parse(yardRecord.EqyHosStart);
-                if (!string.IsNullOrEmpty(yardRecord.EqyHosEnd))
-                    terminal.OpenTo = TimeSpan.Parse(yardRecord.EqyHosEnd);
+                if (!string.IsNullOrEmpty(siteRecord.EqyHosStart))
+                    terminal.OpenFrom = TimeSpan.Parse(siteRecord.EqyHosStart);
+                if (!string.IsNullOrEmpty(siteRecord.EqyHosEnd))
+                    terminal.OpenTo = TimeSpan.Parse(siteRecord.EqyHosEnd);
             }
             catch (Exception)
             {
-                throw new Exception($"EQY {terminal.ForeignID}: Opening hours is not formatted correcly [{yardRecord.EqyHosStart};{yardRecord.EqyHosEnd}]");
+                throw new Exception($"EQY {terminal.ForeignID}: Opening hours is not formatted correcly [{siteRecord.EqyHosStart};{siteRecord.EqyHosEnd}]");
             }
 
             //Infotexts

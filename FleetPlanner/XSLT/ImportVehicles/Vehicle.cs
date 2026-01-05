@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace ImportVehiclesCsv
+namespace ImportVehicles
 {
     //[XmlRoot("VehicleRecord")]
     public class VehicleRecord
