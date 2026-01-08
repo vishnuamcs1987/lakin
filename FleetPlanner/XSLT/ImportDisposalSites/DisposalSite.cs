@@ -32,14 +32,7 @@ namespace ImportDisposalSites
         public string DsStreetAddress1 { get; set; }
 
         [XmlElement("DS_STREET_ADDRESS2")]
-        public string DsStreetAddress2Raw { get; set; }
-        public decimal? DsStreetAddress2
-        {
-            get
-            {
-                return ParseDecimal(DsStreetAddress2Raw);
-            }
-        }
+        public string DsStreetAddress2 { get; set; }
 
         [XmlElement("DS_POSTAL_CODE")]
         public string DsPostalCode { get; set; }

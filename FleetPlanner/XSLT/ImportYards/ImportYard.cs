@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,6 +63,8 @@ namespace ImportYards
                 Address = address
             };
 
+            UpdateTransaction updateTransaction = new UpdateTransaction("Importing Yard " + terminal.ForeignID);
+            updateTransaction.NewObject(dest);
             terminal.Address = new Address() { DestinationReference = new DataReference<Destination>(dest) };
 
             try
@@ -73,7 +76,8 @@ namespace ImportYards
             }
             catch (Exception)
             {
-                throw new Exception($"EQY {terminal.ForeignID}: Opening hours is not formatted correcly [{yardRecord.EqyHosStart};{yardRecord.EqyHosEnd}]");
+                throw new Exception(string.Format("EQY {0}: Opening hours is not formatted correcly [{1};{2}]",
+                    terminal.ForeignID, yardRecord.EqyHosStart, yardRecord.EqyHosEnd));
             }
 
             //Infotexts
@@ -86,8 +90,7 @@ namespace ImportYards
             //}
 
             // Create an import TFP Transaction with a description for the Transaction Log, and fill in objects and actions
-            UpdateTransaction updateTransaction = new UpdateTransaction("Importing Yard " + terminal.ForeignID);
-            updateTransaction.UpdateObject(terminal);
+            updateTransaction.NewObject(terminal);
 
             // Return the Transaction to the Import Server
             return updateTransaction.ToString();

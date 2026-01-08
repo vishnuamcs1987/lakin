@@ -49,7 +49,7 @@
   <ItemGroup>
     <Compile Include="ImportYard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="YardRecord.cs" />
+    <Compile Include="Yard.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

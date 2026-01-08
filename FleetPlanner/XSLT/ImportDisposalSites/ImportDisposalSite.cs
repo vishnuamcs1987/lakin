@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Amcs.Tools.Xml;
+using Tfp.Actions;
 using Tfp.Datamodel;
 using Tfp.Gateways;
 
 namespace ImportDisposalSites
 {
     public class ImportDisposalSite : IExternal
-    {
     {
         public string Run(string input)
         {
@@ -38,21 +38,13 @@ namespace ImportDisposalSites
 
             Address address = new Address()
             {
-                Street = siteRecord.EqyStreetAddress1,
-                HouseNo = siteRecord.EqyStreetAddress2,
-                City = siteRecord.EqyCity,
-                ZipCode = siteRecord.EqyPostalCode,
+                Street = siteRecord.DsStreetAddress1,
+                HouseNo = siteRecord.DsStreetAddress2,
+                City = siteRecord.DsCity,
+                ZipCode = siteRecord.DsPostalCode,
                 Country = "USA",
             };
 
-            if (siteRecord.EqyLatitude.HasValue && siteRecord.EqyLongitude.HasValue)
-            {
-                address.HomeLngLat = new LongLatCoord()
-                {
-                    Lat = new TfpNullable<double>((double)siteRecord.EqyLatitude.Value),
-                    Long = new TfpNullable<double>((double)siteRecord.EqyLongitude.Value),
-                };
-            }
 
             Destination dest = new Destination()
             {
@@ -75,14 +67,13 @@ namespace ImportDisposalSites
                 throw new Exception($"EQY {terminal.ForeignID}: Opening hours is not formatted correcly [{siteRecord.EqyHosStart};{siteRecord.EqyHosEnd}]");
             }
 
-            //Infotexts
-            //if (updateWasteDisposal.Infotexts != null)
-            //{
-            //    foreach (Infotext infoText in updateWasteDisposal.Infotexts)
-            //    {
-            //        dataBucket.Actions.Add(new UpdateInfoTextAction("TERMINAL[" + updateWasteDisposal.Id + "]", infoText.Value, infoText.Key, false));
-            //    }
-            //}
+            // Infotexts
+            UpdateInfoTextAction infotextAction1 = new UpdateInfoTextAction("TERMINAL[" + terminal.ForeignID + "]", siteRecord.DsServiceId.ToString(), "Subsidiary", false);
+            updateTransaction.PerformAction(infotextAction1);
+
+            UpdateInfoTextAction infotextAction2 = new UpdateInfoTextAction("TERMINAL[" + terminal.ForeignID + "]", siteRecord.DsServiceId.ToString(), "Subsidiary", false);
+            updateTransaction.PerformAction(infotextAction2);
+
 
             // Create an import TFP Transaction with a description for the Transaction Log, and fill in objects and actions
             UpdateTransaction updateTransaction = new UpdateTransaction("Importing Yard " + terminal.ForeignID);
