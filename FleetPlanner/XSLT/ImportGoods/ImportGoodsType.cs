@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Amcs.Tools.Xml;
+using Tfp.Actions;
 using Tfp.Datamodel;
 using Tfp.Gateways;
 
@@ -22,20 +23,31 @@ namespace ImportGoods
             }
             InventoryRecord inventoryRecord = importData.Record;
 
+
             // Check for non-empty strings
             if (string.IsNullOrWhiteSpace(importData.Record.Item) ||
-                string.IsNullOrWhiteSpace(importData.Record.Description))
+                string.IsNullOrWhiteSpace(importData.Record.Description) ||
+                string.IsNullOrWhiteSpace(importData.Record.Type))
             {
-                throw new InvalidDataException("Error: ITEM and DESCRIPTION must not be empty for goods type.");
+                throw new InvalidDataException("Error: ITEM, DESCRIPTION, TYPE must not be empty for goods type.");
             }
 
             InventoryType inventoryType = new InventoryType()
             {
                 ForeignID = inventoryRecord.Item,
-                Name = inventoryRecord.Description,
+                Name = inventoryRecord.Item,
+                Group = new DataReference<InventoryType>(inventoryRecord.Type),
+
             };
             UpdateTransaction updateTransaction = new UpdateTransaction("Importing goods type" + inventoryType.ForeignID);
             updateTransaction.NewObject(inventoryType);
+
+            if (!string.IsNullOrEmpty(inventoryRecord.Description))
+            {
+                UpdateInfoTextAction infotextAction1 = new UpdateInfoTextAction("INVENTORYTYPE[" + inventoryType.ForeignID + "]", inventoryRecord.Description,
+                    "Description",false);
+                updateTransaction.PerformAction(infotextAction1);
+            }
             return updateTransaction.ToString();
         }
     }
@@ -47,6 +59,9 @@ namespace ImportGoods
 
         [XmlElement("DESCRIPTION")]
         public string Description { get; set; }
+
+        [XmlElement("TYPE")]
+        public string Type { get; set; }
     }
 
     [XmlRoot("BODY")]

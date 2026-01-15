@@ -45,23 +45,45 @@ namespace ImportYards
                 City = yardRecord.EqyCity,
                 ZipCode = yardRecord.EqyPostalCode,
                 Country = "USA",
+                
             };
 
             if (yardRecord.EqyLatitude.HasValue && yardRecord.EqyLongitude.HasValue)
             {
-                address.HomeLngLat = new LongLatCoord()
+                double lat = (double)yardRecord.EqyLatitude.Value;
+                double lon = (double)yardRecord.EqyLongitude.Value;
+                LongLatCoord lnglat = new LongLatCoord(lon, lat);
+                UTMCoord utmCoord = lnglat.ToUTMCoord();
+                address.HomeUTM = utmCoord;
+                address.RoadUTM = utmCoord;
+            }
+            else
+            {
+                Tfp.TfpRequests.GeocodeRequest geocodeRequest = new Tfp.TfpRequests.GeocodeRequest()
                 {
-                    Lat = new TfpNullable<double>((double)yardRecord.EqyLatitude.Value),
-                    Long = new TfpNullable<double>((double)yardRecord.EqyLongitude.Value),
+                    Address = address,
+                    FailOnError = false,
                 };
+                geocodeRequest = Tfp.TfpRequests.TFPRequestInterface.PerformRequest(geocodeRequest);
+                if (!string.IsNullOrEmpty(geocodeRequest.ErrorMessage))
+                {
+                    // Geocoding failed
+                    throw new InvalidOperationException("Geocoding yard failed: " + address.Street + ", " + address.HouseNo + ", "
+                        + address.ZipCode + ", " + address.City + ". Error: " + geocodeRequest.ErrorMessage);
+                }
+                else
+                {
+                    address = geocodeRequest.Address;
+                }
             }
 
-            Destination dest = new Destination()
-            {
-                ForeignID = terminal.ForeignID,
-                Name = terminal.Name,
-                Address = address
-            };
+
+                Destination dest = new Destination()
+                {
+                    ForeignID = terminal.ForeignID,
+                    Name = terminal.Name,
+                    Address = address
+                };
 
             UpdateTransaction updateTransaction = new UpdateTransaction("Importing Yard " + terminal.ForeignID);
             updateTransaction.NewObject(dest);
