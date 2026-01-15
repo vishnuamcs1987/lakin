@@ -29,8 +29,8 @@ namespace ImportYards
             Terminal terminal = new Terminal()
             {
                 ForeignID = yardRecord.FpEqyid,
-                Name = yardRecord.EqyTerminalNo,
-                Name2 = yardRecord.EqyName,
+                Name = yardRecord.EqyName,
+                Name2 = yardRecord.EqyTerminalNo,
                 //QualificationProfiles = new List<DataReference<QualificationProfile>>(),
                 //Qualifications = new QualificationEntries { Entries = new List<QualificationEntry>() },
                 //IgnoreInventoryCollectionTime = true,
@@ -40,13 +40,12 @@ namespace ImportYards
 
             Address address = new Address()
             {
-                Street = yardRecord.EqyStreetAddress1,
-                HouseNo = yardRecord.EqyStreetAddress2,
+                HousePostfix = yardRecord.EqyStreetAddress2,
                 City = yardRecord.EqyCity,
                 ZipCode = yardRecord.EqyPostalCode,
                 Country = "USA",
-                
             };
+            AddressParser.ParseStreet(yardRecord.EqyStreetAddress1, address);
 
             if (yardRecord.EqyLatitude.HasValue && yardRecord.EqyLongitude.HasValue)
             {
@@ -78,12 +77,12 @@ namespace ImportYards
             }
 
 
-                Destination dest = new Destination()
-                {
-                    ForeignID = terminal.ForeignID,
-                    Name = terminal.Name,
-                    Address = address
-                };
+            Destination dest = new Destination()
+            {
+                ForeignID = terminal.ForeignID,
+                Name = terminal.Name,
+                Address = address
+            };
 
             UpdateTransaction updateTransaction = new UpdateTransaction("Importing Yard " + terminal.ForeignID);
             updateTransaction.NewObject(dest);

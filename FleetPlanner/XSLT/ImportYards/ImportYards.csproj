@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressParser.cs" />
     <Compile Include="ImportYard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Yard.cs" />
