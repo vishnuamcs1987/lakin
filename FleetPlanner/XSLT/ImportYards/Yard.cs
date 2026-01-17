@@ -12,14 +12,7 @@ namespace ImportYards
         public string EqyTerminalNo { get; set; }
 
         [XmlElement("EQY_SERVICE_ID")]
-        public string EqyServiceIdRaw { get; set; }
-        public int? EqyServiceId
-        {
-            get
-            {
-                return ParseInt(EqyServiceIdRaw);
-            }
-        }
+        public string EqyServiceId { get; set; }
 
         [XmlElement("EQY_NAME")]
         public string EqyName { get; set; }

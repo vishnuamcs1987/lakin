@@ -30,7 +30,7 @@ namespace ImportYards
             {
                 ForeignID = yardRecord.FpEqyid,
                 Name = yardRecord.EqyName,
-                Name2 = yardRecord.EqyTerminalNo,
+                Name2 = yardRecord.EqyServiceId,
                 //QualificationProfiles = new List<DataReference<QualificationProfile>>(),
                 //Qualifications = new QualificationEntries { Entries = new List<QualificationEntry>() },
                 //IgnoreInventoryCollectionTime = true,
@@ -61,7 +61,7 @@ namespace ImportYards
                 Tfp.TfpRequests.GeocodeRequest geocodeRequest = new Tfp.TfpRequests.GeocodeRequest()
                 {
                     Address = address,
-                    FailOnError = false,
+                    FailOnError = true,
                 };
                 geocodeRequest = Tfp.TfpRequests.TFPRequestInterface.PerformRequest(geocodeRequest);
                 if (!string.IsNullOrEmpty(geocodeRequest.ErrorMessage))
@@ -90,9 +90,9 @@ namespace ImportYards
 
             try
             {
-                if (!string.IsNullOrEmpty(yardRecord.EqyHosStart))
+                if (!string.IsNullOrEmpty(yardRecord.EqyHosStart) && yardRecord.EqyHosStart != "NULL")
                     terminal.OpenFrom = TimeSpan.Parse(yardRecord.EqyHosStart);
-                if (!string.IsNullOrEmpty(yardRecord.EqyHosEnd))
+                if (!string.IsNullOrEmpty(yardRecord.EqyHosEnd) && yardRecord.EqyHosEnd != "NULL")
                     terminal.OpenTo = TimeSpan.Parse(yardRecord.EqyHosEnd);
             }
             catch (Exception)
@@ -102,13 +102,12 @@ namespace ImportYards
             }
 
             //Infotexts
-            //if (updateWasteDisposal.Infotexts != null)
-            //{
-            //    foreach (Infotext infoText in updateWasteDisposal.Infotexts)
-            //    {
-            //        dataBucket.Actions.Add(new UpdateInfoTextAction("TERMINAL[" + updateWasteDisposal.Id + "]", infoText.Value, infoText.Key, false));
-            //    }
-            //}
+            if (!string.IsNullOrEmpty(yardRecord.EqyTerminalNo))
+            {
+                UpdateInfoTextAction infotextAction1 = new UpdateInfoTextAction("TERMINAL[" + terminal.ForeignID + "]", 
+                    yardRecord.EqyTerminalNo, "TERMINAL_NO", false);
+                updateTransaction.PerformAction(infotextAction1);
+            }
 
             // Create an import TFP Transaction with a description for the Transaction Log, and fill in objects and actions
             updateTransaction.NewObject(terminal);
