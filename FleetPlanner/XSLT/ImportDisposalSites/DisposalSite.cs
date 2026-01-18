@@ -16,14 +16,7 @@ namespace ImportDisposalSites
         public string DsTerminalNo { get; set; }
 
         [XmlElement("DS_SERVICE_ID")]
-        public string DsServiceIdRaw { get; set; }
-        public int? DsServiceId
-        {
-            get
-            {
-                return ParseInt(DsServiceIdRaw);
-            }
-        }
+        public string DsServiceId { get; set; }
 
         [XmlElement("DS_NAME")]
         public string DsName { get; set; }

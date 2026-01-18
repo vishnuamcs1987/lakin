@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddressParser.cs" />
     <Compile Include="DisposalSite.cs" />
     <Compile Include="ImportDisposalSite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
