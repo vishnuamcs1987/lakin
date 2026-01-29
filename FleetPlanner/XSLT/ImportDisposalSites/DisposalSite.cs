@@ -140,10 +140,10 @@ namespace ImportDisposalSites
         }
     }
 
-    [XmlRoot("BODY")]
-    public class DisposalSiteImportBody
-    {
-        [XmlElement("DisposalSiteRecord")]
-        public DisposalSiteRecord Record { get; set; }
-    }
+                                                                                                                                                                [XmlRoot("BODY")]
+                                                                                                                                                                public class DisposalSiteImportBody
+                                                                                                                                                                {
+                                                                                                                                                                    [XmlElement("DisposalSiteRecord")]
+                                                                                                                                                                    public DisposalSiteRecord Record { get; set; }
+                                                                                                                                                                }
 }

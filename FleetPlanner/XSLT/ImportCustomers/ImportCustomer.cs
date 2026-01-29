@@ -9,27 +9,28 @@ using ImportYards;
 using Tfp.Actions;
 using Tfp.Datamodel;
 using Tfp.Gateways;
+using static ImportCustomers.CustomerRecord;
 
-namespace ImportDisposalSites
+namespace ImportCustomers
 {
-    public class ImportDisposalSite : IExternal
+    public class ImportCustomer : IExternal
     {
         public string Run(string input)
         {
-            DisposalSiteImportBody importData = XmlSerializerCache.Deserialize<DisposalSiteImportBody>(input, "BODY");
+            CustomerImportBody importData = XmlSerializerCache.Deserialize<CustomerImportBody>(input, "BODY");
 
             if (importData == null || importData.Record == null)
             {
 
                 throw new InvalidDataException("Error: Could not deserialize XML. Check structure.");
             }
-            DisposalSiteRecord siteRecord = importData.Record;
+            CustomerRecord customerRecord = importData.Record;
 
             Terminal terminal = new Terminal()
             {
-                ForeignID = siteRecord.FpDsid,
-                Name = siteRecord.DsName,
-                Name2 = siteRecord.DsServiceId,
+                ForeignID = customerRecord.FpCsid,
+                Name = customerRecord.CsName,
+                Name2 = customerRecord.CsServiceId,
                 //QualificationProfiles = new List<DataReference<QualificationProfile>>(),
                 //Qualifications = new QualificationEntries { Entries = new List<QualificationEntry>() },
                 //IgnoreInventoryCollectionTime = true,
@@ -39,17 +40,17 @@ namespace ImportDisposalSites
 
             Address address = new Address()
             {
-                HousePostfix = siteRecord.DsStreetAddress2,
-                City = siteRecord.DsCity,
-                ZipCode = siteRecord.DsPostalCode,
+                HousePostfix = customerRecord.DsStreetAddress2,
+                City = customerRecord.DsCity,
+                ZipCode = customerRecord.DsPostalCode,
                 Country = "USA",
             };
-            AddressParser.ParseStreet(siteRecord.DsStreetAddress1, address);
+            AddressParser.ParseStreet(customerRecord.DsStreetAddress1, address);
 
-            if (siteRecord.DsLatitude.HasValue && siteRecord.DsLongitude.HasValue)
+            if (customerRecord.DsLatitude.HasValue && customerRecord.DsLongitude.HasValue)
             {
-                double lat = (double)siteRecord.DsLatitude.Value;
-                double lon = (double)siteRecord.DsLongitude.Value;
+                double lat = (double)customerRecord.DsLatitude.Value;
+                double lon = (double)customerRecord.DsLongitude.Value;
                 LongLatCoord lnglat = new LongLatCoord(lon, lat);
                 UTMCoord utmCoord = lnglat.ToUTMCoord();
                 address.HomeUTM = utmCoord;
@@ -88,18 +89,18 @@ namespace ImportDisposalSites
 
             try
             {
-                if (!string.IsNullOrEmpty(siteRecord.DsHosStart))
-                    terminal.OpenFrom = TimeSpan.Parse(siteRecord.DsHosStart);
-                if (!string.IsNullOrEmpty(siteRecord.DsHosEnd))
-                    terminal.OpenTo = TimeSpan.Parse(siteRecord.DsHosEnd);
+                if (!string.IsNullOrEmpty(customerRecord.DsHosStart))
+                    terminal.OpenFrom = TimeSpan.Parse(customerRecord.DsHosStart);
+                if (!string.IsNullOrEmpty(customerRecord.DsHosEnd))
+                    terminal.OpenTo = TimeSpan.Parse(customerRecord.DsHosEnd);
             }
             catch (Exception)
             {
                 throw new Exception(string.Format("EQY {0}: Opening hours is not formatted correcly [{1};{2}]",
-                    terminal.ForeignID, siteRecord.DsHosStart, siteRecord.DsHosEnd));
+                    terminal.ForeignID, customerRecord.DsHosStart, customerRecord.DsHosEnd));
             }
 
-            if (!string.IsNullOrEmpty(siteRecord.DsDeliveryDays))
+            if (!string.IsNullOrEmpty(customerRecord.DsDeliveryDays))
             {
                 //fixme create method to check or create dutypatterns and assign terminal to it
             }
@@ -107,17 +108,7 @@ namespace ImportDisposalSites
 
 
             // Infotexts
-            UpdateInfoTextAction infotextAction1 = new UpdateInfoTextAction("TERMINAL[" + terminal.ForeignID + "]",
-                siteRecord.DsTerminalNo, "TERMINAL_NO", false);
-            updateTransaction.PerformAction(infotextAction1);
-
-            UpdateInfoTextAction infotextAction2 = new UpdateInfoTextAction("TERMINAL[" + terminal.ForeignID + "]", siteRecord.DsServiceReference, 
-                "SERVICE_REFERENCE", false);
-            updateTransaction.PerformAction(infotextAction1);
-
-            UpdateInfoTextAction infotextAction3 = new UpdateInfoTextAction("TERMINAL[" + terminal.ForeignID + "]", siteRecord.DsServiceId.
-                ToString(), "Subsidiary", false);
-            updateTransaction.PerformAction(infotextAction2);
+            TFPList<InfoTextKeyValue> activityInfotextsToUpdate = new List<InfoTextKeyValue>();
 
 
             updateTransaction.UpdateObject(terminal);

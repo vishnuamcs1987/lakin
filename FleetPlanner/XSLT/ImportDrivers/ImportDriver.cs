@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Amcs.Tools.Xml;
+using ImportYards;
 using Tfp.Actions;
 using Tfp.Datamodel;
 using Tfp.Datamodel.Extensions;
@@ -31,25 +32,44 @@ namespace ImportDrivers
                 ForeignID = driverRecord.DrId,
                 Name = driverRecord.DrName,
             };
-            UpdateTransaction updateTransaction = new UpdateTransaction("Importing driver address" + driver.ForeignID);
+            
+            UpdateTransaction updateTransaction = new UpdateTransaction("Importing driver" + driver.ForeignID);
 
             if (!string.IsNullOrEmpty(driverRecord.DrAddress1) && !string.IsNullOrEmpty(driverRecord.DrCity) && !string.IsNullOrEmpty(driverRecord.DrPostalCode))
             {
                 Tfp.Datamodel.Address address = new Tfp.Datamodel.Address()
                 {
-                    Street = driverRecord.DrAddress1,
-                    HouseNo = "",
                     City = driverRecord.DrCity,
                     ZipCode = driverRecord.DrPostalCode,
                     Country = "USA",
                 };
+                AddressParser.ParseStreet(driverRecord.DrAddress1, address);
+
+                Tfp.TfpRequests.GeocodeRequest geocodeRequest = new Tfp.TfpRequests.GeocodeRequest()
+                {
+                    Address = address,
+                    FailOnError = true,
+                };
+                geocodeRequest = Tfp.TfpRequests.TFPRequestInterface.PerformRequest(geocodeRequest);
+                if (!string.IsNullOrEmpty(geocodeRequest.ErrorMessage))
+                {
+                    // Geocoding failed
+                    throw new InvalidOperationException("Geocoding driver failed: " + address.Street + ", " + address.HouseNo + ", "
+                        + address.ZipCode + ", " + address.City + ". Error: " + geocodeRequest.ErrorMessage);
+                }
+                else
+                {
+                    address = geocodeRequest.Address;
+                }
+
                 Destination dest = new Destination()
                 {
                     ForeignID = driver.ForeignID,
                     Name = driver.Name,
                     Address = address
                 };
-                updateTransaction.NewObject(dest); 
+
+                updateTransaction.UpdateObject(dest);
                 driver.Address = new Tfp.Datamodel.Address() { DestinationReference = new DataReference<Destination>(dest) };
             }
             
@@ -76,19 +96,14 @@ namespace ImportDrivers
                 }
             }
 
-            updateTransaction.NewObject(driver); //fixme new vs update? how do I completely over-write driver object
+            updateTransaction.NewObject(driver);
 
             // Infotexts
-            if (!string.IsNullOrEmpty(driverRecord.DrSubsidiary))
-            {
-                UpdateInfoTextAction infotextAction1 = new UpdateInfoTextAction("DRIVER[" + driver.ForeignID + "]", driverRecord.DrSubsidiary, "Subsidiary", false);
-                updateTransaction.PerformAction(infotextAction1);
-            }
-            if (!string.IsNullOrEmpty(driverRecord.DrTractor)) //fixme askPeder 
-            {
-                UpdateInfoTextAction infotextAction2 = new UpdateInfoTextAction("DRIVER[" + driver.ForeignID + "]", driverRecord.DrTractor, "Tractor", false);
-                updateTransaction.PerformAction(infotextAction2);
-            }
+            UpdateInfoTextAction infotextAction1 = new UpdateInfoTextAction("DRIVER[" + driver.ForeignID + "]", driverRecord.DrSubsidiary, "SUBSIDIARY", false);
+            updateTransaction.PerformAction(infotextAction1);
+
+            UpdateInfoTextAction infotextAction2 = new UpdateInfoTextAction("DRIVER[" + driver.ForeignID + "]", driverRecord.DrTractor, "TRACTOR", false);
+            updateTransaction.PerformAction(infotextAction2);
 
             // Return the Transaction to the Import Server
             return updateTransaction.ToString();
